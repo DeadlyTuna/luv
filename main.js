@@ -1,5 +1,37 @@
 // main.js — Confetti, floating hearts, scroll reveal, day counter
 
+// ── ❤️ Heart Emoji Cursor ──
+(function () {
+  const size = 32;
+  const c    = document.createElement('canvas');
+  c.width = c.height = size;
+  const ctx = c.getContext('2d');
+  ctx.font = `${size * 0.85}px serif`;
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('❤️', size / 2, size / 2 + 1);
+
+  const url = c.toDataURL();
+  // hotspot: center of the heart
+  const cursorVal = `url(${url}) ${size / 2} ${size / 2}, auto`;
+
+  // Apply to whole document
+  document.documentElement.style.cursor = cursorVal;
+
+  // Keep native pointer/text cursors on interactive elements
+  const style = document.createElement('style');
+  style.textContent = `
+    a, button, [role="button"], input, textarea, select,
+    label, .slideshow-card, .photo-frame, .stat-card,
+    .globe-card-trigger, .ss-nav, .ss-close, .ss-dot,
+    .explore-btn, #closeGlobe {
+      cursor: url(${url}) ${size / 2} ${size / 2}, pointer !important;
+    }
+  `;
+  document.head.appendChild(style);
+})();
+
+
 // ── Confetti ──
 (function () {
   const confettiEl = document.getElementById('confetti');
