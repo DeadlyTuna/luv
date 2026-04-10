@@ -49,6 +49,27 @@
     </div>
   </section>
 
+  <!-- ════════ SPACE VIBE SECTION ════════ -->
+  <section class="space-section">
+    <div class="stars-bg"></div>
+    <div class="space-content">
+      <div class="space-text text-left reveal">
+        <h3>She's breathtaking</h3>
+        <p>Your smile lights up even the darkest skies. Every time you laugh, the entire world seems to pause and listen to its melody.</p>
+      </div>
+      
+      <div class="space-image-wrapper reveal" style="transition-delay:0.2s">
+        <div class="space-image-glow"></div>
+        <img src="photos/u/37.png" alt="Her" class="space-image">
+      </div>
+      
+      <div class="space-text text-right reveal" style="transition-delay:0.4s">
+        <h3>She's my universe</h3>
+        <p>I find endless comfort in your presence. You make everything feel so effortless, like we were written in the stars long ago.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- ════════ THREE.JS FLOATING HEARTS SCENE ════════ -->
   <section class="memory-scene-wrapper">
     <div class="memory-scene-header">
@@ -207,26 +228,47 @@
       <canvas id="letter-canvas" style="display: block; width: 100%; height: 100%;"></canvas>
     </div>
     <div class="letter-wrap" style="position: relative; z-index: 1;">
-      <div class="section-label reveal" style="text-align:center;margin-bottom:1rem">from the bottom of my heart</div>
-      <div class="letter-card reveal">
-        <div class="letter-seal">H</div>
-        <div class="letter-to">Dear Simran (Cherry) ❤️</div>
-        <div class="letter-body">
-          It's only been two months, but honestly… it feels like so much more, just because of how special every moment
-          with you has been. Every conversation, every laugh, every little thing we've shared means more to me than I
-          can put into words.
-
-          Spending time with you every day is the best part of my day. And those random plans when we meet… seeing you
-          from a distance and walking towards you brings me a kind of happiness I can't even explain.
-
-          In just these two months, we've already made so many beautiful memories, and I can't wait to make more —
-          traveling together, going to new places, and doing all the things we dream about.
-
-          I genuinely feel so lucky to have you… sometimes even like I don't deserve someone as amazing as you.
-
-          Thank you for being you. I'm really, really glad you're mine ❤️
+      <div class="section-label reveal" style="text-align:center;margin-bottom:2.5rem">from the bottom of my heart</div>
+      
+      <div class="letter-layout reveal" id="letterLayout">
+        
+        <!-- Interactive Envelope Graphic -->
+        <div class="envelope-graphic" id="envelopeGraphic">
+          <div class="env-back"></div>
+          <div class="env-paper"></div>
+          <div class="env-front"></div>
+          <div class="env-flap">
+            <div class="env-seal">H</div>
+          </div>
+          <div class="env-hint">💌 tap to open</div>
         </div>
-        <div class="letter-sign">— Harsh, always yours 🌸</div>
+
+        <!-- The Expanding Letter Card -->
+        <div class="letter-wrapper">
+          <div class="letter-inner">
+            <div class="letter-card">
+              <div class="letter-seal">H</div>
+              <div class="letter-to">Dear Simran (Cherry) ❤️</div>
+              <div class="letter-body">
+                It's only been two months, but honestly… it feels like so much more, just because of how special every moment
+                with you has been. Every conversation, every laugh, every little thing we've shared means more to me than I
+                can put into words.
+
+                Spending time with you every day is the best part of my day. And those random plans when we meet… seeing you
+                from a distance and walking towards you brings me a kind of happiness I can't even explain.
+
+                In just these two months, we've already made so many beautiful memories, and I can't wait to make more —
+                traveling together, going to new places, and doing all the things we dream about.
+
+                I genuinely feel so lucky to have you… sometimes even like I don't deserve someone as amazing as you.
+
+                Thank you for being you. I'm really, really glad you're mine ❤️
+              </div>
+              <div class="letter-sign">— Harsh, always yours 🌸</div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>

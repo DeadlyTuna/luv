@@ -89,6 +89,17 @@
   const el = document.getElementById('days');
   if (el && days > 0) el.dataset.count = days;
 })();
+
+// ── Envelope Open Toggle ──
+(function () {
+  const envGraphic = document.getElementById('envelopeGraphic');
+  const envLayout = document.getElementById('letterLayout');
+  if (envGraphic && envLayout) {
+    envGraphic.addEventListener('click', () => {
+      envLayout.classList.add('is-open');
+    });
+  }
+})();
 // 🌍 Globe control — triggered by the photo card
 const openGlobe    = document.getElementById('openGlobe');
 const globeOverlay = document.getElementById('globeOverlay');
