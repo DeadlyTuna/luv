@@ -100,6 +100,70 @@
     });
   }
 })();
+
+// ── 🌸 Persistent Floating Petals ──
+(function () {
+  const container = document.getElementById('floatingPetals');
+  if (!container) return;
+  const petals = ['🌸', '✨', '💕', '🩷', '❀'];
+
+  function spawnPetal() {
+    const p = document.createElement('span');
+    p.className = 'petal';
+    p.textContent = petals[Math.floor(Math.random() * petals.length)];
+    const startX = Math.random() * 100;
+    const driftX = (Math.random() - 0.5) * 200;
+    const driftR = (Math.random() * 720 - 360);
+    const duration = 8 + Math.random() * 10;
+    const size = 0.7 + Math.random() * 0.8;
+
+    p.style.cssText = `
+      left: ${startX}%;
+      top: -30px;
+      font-size: ${size}rem;
+      --drift-x: ${driftX}px;
+      --drift-r: ${driftR}deg;
+      animation-duration: ${duration}s;
+      animation-delay: 0s;
+    `;
+    container.appendChild(p);
+    setTimeout(() => p.remove(), duration * 1000);
+  }
+
+  // Spawn one every 1.5s
+  setInterval(spawnPetal, 1500);
+  // Spawn initial batch
+  for (let i = 0; i < 6; i++) setTimeout(spawnPetal, i * 300);
+})();
+
+// ── Global Scroll Parallax ──
+(function () {
+  const hero = document.querySelector('.hero');
+  const heroTitle = document.querySelector('.hero-title');
+  const heroSub = document.querySelector('.hero-sub');
+  const heroTag = document.querySelector('.hero-tag');
+
+  if (hero && heroTitle) {
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      const max = window.innerHeight;
+      if (y < max) {
+        const ratio = y / max;
+        heroTitle.style.transform = `translateY(${ratio * 80}px) scale(${1 - ratio * 0.15})`;
+        heroTitle.style.opacity = 1 - ratio * 1.2;
+        if (heroSub) {
+          heroSub.style.transform = `translateY(${ratio * 50}px)`;
+          heroSub.style.opacity = 1 - ratio * 1.5;
+        }
+        if (heroTag) {
+          heroTag.style.transform = `translateY(${ratio * 30}px)`;
+          heroTag.style.opacity = 1 - ratio * 1.8;
+        }
+      }
+    }, { passive: true });
+  }
+})();
+
 // 🌍 Globe control — triggered by the photo card
 const openGlobe    = document.getElementById('openGlobe');
 const globeOverlay = document.getElementById('globeOverlay');
