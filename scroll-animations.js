@@ -9,16 +9,16 @@
   const scenes = document.querySelectorAll('.scroll-scene');
 
   scenes.forEach((scene, i) => {
-    const backdrop    = scene.querySelector('.scene-backdrop');
-    const leftPanel   = scene.querySelector('.photo-panel.left');
-    const rightPanel  = scene.querySelector('.photo-panel.right');
-    const centerEl    = scene.querySelector('.scene-center');
+    const backdrop = scene.querySelector('.scene-backdrop');
+    const leftPanel = scene.querySelector('.photo-panel.left');
+    const rightPanel = scene.querySelector('.photo-panel.right');
+    const centerEl = scene.querySelector('.scene-center');
 
     // Entry state
     gsap.set(backdrop, { scale: 0.7, opacity: 0, filter: 'blur(24px)' });
-    if (leftPanel)  gsap.set(leftPanel,  { x: -200, opacity: 0, rotateZ: -12 });
-    if (rightPanel) gsap.set(rightPanel, { x:  200, opacity: 0, rotateZ:  12 });
-    if (centerEl)   gsap.set(centerEl,   { opacity: 0, y: 30 });
+    if (leftPanel) gsap.set(leftPanel, { x: -200, opacity: 0, rotateZ: -12 });
+    if (rightPanel) gsap.set(rightPanel, { x: 200, opacity: 0, rotateZ: 12 });
+    if (centerEl) gsap.set(centerEl, { opacity: 0, y: 30 });
 
     // ScrollTrigger timeline for this scene
     const tl = gsap.timeline({
@@ -74,8 +74,8 @@
     if (leftPanel || rightPanel) {
       scene.addEventListener('mousemove', e => {
         const rect = scene.getBoundingClientRect();
-        const mx = (e.clientX - rect.left) / rect.width  - 0.5;
-        const my = (e.clientY - rect.top)  / rect.height - 0.5;
+        const mx = (e.clientX - rect.left) / rect.width - 0.5;
+        const my = (e.clientY - rect.top) / rect.height - 0.5;
 
         if (leftPanel) {
           gsap.to(leftPanel, { x: mx * -18, y: my * 10, duration: 0.6, ease: 'power1.out', overwrite: 'auto' });
@@ -87,7 +87,7 @@
       });
 
       scene.addEventListener('mouseleave', () => {
-        if (leftPanel)  gsap.to(leftPanel,  { x: 0, y: 0, duration: 0.8, ease: 'power2.out', overwrite: 'auto' });
+        if (leftPanel) gsap.to(leftPanel, { x: 0, y: 0, duration: 0.8, ease: 'power2.out', overwrite: 'auto' });
         if (rightPanel) gsap.to(rightPanel, { x: 0, y: 0, duration: 0.8, ease: 'power2.out', overwrite: 'auto' });
         gsap.to(backdrop, { x: 0, y: 0, duration: 0.8, ease: 'power2.out', overwrite: 'auto' });
       });
