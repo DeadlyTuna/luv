@@ -248,11 +248,11 @@ export default function ScrollScenes({ onOpenSlideshow, onGlobeOpen }) {
 
       {/* Scene 2 */}
       <div className="scroll-scene">
-        <div className="scene-backdrop" style={{ background: 'linear-gradient(135deg,#fff8e1,#fce4ec,#e8f5e9)' }} />
+        <div className="scene-backdrop" style={{ background: 'linear-gradient(135deg, rgba(255,107,138,0.06), rgba(15,10,25,0.5), rgba(255,184,140,0.04))' }} />
         <div className="photo-panel left">
           <div className="photo-frame">
             <div className="pin" />
-            <div className="photo-frame-img" style={{ background: '#fff8e1' }}><span>😂</span></div>
+            <div className="photo-frame-img" style={{ background: 'rgba(40,20,30,0.6)' }}><span>😂</span></div>
             <div className="photo-frame-caption">every random laugh</div>
             <div className="photo-frame-date">daily</div>
           </div>
@@ -265,7 +265,7 @@ export default function ScrollScenes({ onOpenSlideshow, onGlobeOpen }) {
         <div className="photo-panel right">
           <div className="photo-frame">
             <div className="pin" />
-            <div className="photo-frame-img" style={{ background: '#fce4ec' }}><span>💌</span></div>
+            <div className="photo-frame-img" style={{ background: 'rgba(30,15,25,0.6)' }}><span>💌</span></div>
             <div className="photo-frame-caption">every good morning text</div>
             <div className="photo-frame-date">always</div>
           </div>
@@ -274,11 +274,11 @@ export default function ScrollScenes({ onOpenSlideshow, onGlobeOpen }) {
 
       {/* Scene 3 — Globe */}
       <div className="scroll-scene">
-        <div className="scene-backdrop" style={{ background: 'linear-gradient(135deg,#f3e5f5,#e3f2fd,#fff5f7)' }} />
+        <div className="scene-backdrop" style={{ background: 'linear-gradient(135deg, rgba(100,80,200,0.06), rgba(15,10,25,0.5), rgba(80,180,255,0.04))' }} />
         <div className="photo-panel left">
           <div className="photo-frame">
             <div className="pin" />
-            <div className="photo-frame-img" style={{ background: '#f3e5f5' }}><span>🌅</span></div>
+            <div className="photo-frame-img" style={{ background: 'rgba(25,15,35,0.6)' }}><span>🌅</span></div>
             <div className="photo-frame-caption">sunsets we'll see together</div>
             <div className="photo-frame-date">coming soon</div>
           </div>

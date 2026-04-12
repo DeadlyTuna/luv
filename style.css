@@ -1,29 +1,201 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --rose: #e8567a;
+  --rose: #ff6b8a;
   --rose-light: #fce4ec;
-  --rose-pale: #fff5f7;
-  --cream: #fffbf5;
-  --warm: #f7e8d0;
-  --gold: #d4956a;
-  --text: #2a1a1f;
-  --muted: #8a6a72;
+  --rose-pale: rgba(255, 245, 247, 0.06);
+  --cream: #0a0a1a;
+  --warm: rgba(40, 20, 40, 0.7);
+  --gold: #ffb88c;
+  --text: #f0e6ef;
+  --muted: #b8a0b2;
   --soft: #c9a0aa;
+  --space-bg: #050510;
+  --panel-bg: rgba(15, 10, 25, 0.75);
+  --panel-border: rgba(255, 107, 138, 0.15);
+  --panel-glow: rgba(255, 107, 138, 0.08);
 }
 
 html { scroll-behavior: smooth; font-size: 17px; }
 
 body {
   font-family: 'DM Sans', sans-serif;
-  background: var(--cream);
+  background: var(--space-bg);
   color: var(--text);
   overflow-x: hidden;
 }
 
-/* ── SLIDE-SECTION WRAPPER (GSAP animates this) ── */
-.slide-section {
+/* ═══════════════════════════════════════════════════════
+   🌌 SPACE BACKGROUND (fixed behind everything)
+═══════════════════════════════════════════════════════ */
+.space-bg-fixed {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.space-bg-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.space-bg-nebula {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(ellipse 50% 40% at 20% 30%, rgba(255, 107, 138, 0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 50% at 80% 70%, rgba(100, 120, 255, 0.05) 0%, transparent 65%);
+  animation: nebulaFloat 20s ease-in-out infinite alternate;
+}
+
+.space-bg-nebula-2 {
+  background:
+    radial-gradient(ellipse 45% 35% at 60% 20%, rgba(255, 184, 140, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 35% 55% at 30% 80%, rgba(180, 100, 255, 0.03) 0%, transparent 55%);
+  animation-delay: -10s;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes nebulaFloat {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(30px, -20px) scale(1.05); }
+}
+
+/* ═══════════════════════════════════════════════════════
+   🏛️ CENTRAL 3D POLE
+═══════════════════════════════════════════════════════ */
+.central-pole-container {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  perspective: 1200px;
+}
+
+.central-pole {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.pole-core {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    rgba(255, 107, 138, 0.0) 0%,
+    rgba(255, 107, 138, 0.25) 20%,
+    rgba(255, 184, 140, 0.35) 50%,
+    rgba(255, 107, 138, 0.25) 80%,
+    rgba(255, 107, 138, 0.0) 100%);
+  border-radius: 3px;
+}
+
+.pole-glow {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 100%;
+  background: linear-gradient(180deg,
+    rgba(255, 107, 138, 0.0) 0%,
+    rgba(255, 107, 138, 0.08) 30%,
+    rgba(255, 184, 140, 0.12) 50%,
+    rgba(255, 107, 138, 0.08) 70%,
+    rgba(255, 107, 138, 0.0) 100%);
+  filter: blur(24px);
+}
+
+.pole-shine {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(255,255,255,0.4) 30%,
+    rgba(255,255,255,0.7) 50%,
+    rgba(255,255,255,0.4) 70%,
+    transparent 100%);
+  opacity: 0.8;
+  border-radius: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   📄 PAGE PANELS (each section)
+═══════════════════════════════════════════════════════ */
+.pages-container {
+  position: relative;
+  z-index: 10;
+  padding: 2rem 0;
+}
+
+.page-panel {
+  position: relative;
+  margin: 4rem auto;
+  max-width: 1200px;
+  width: calc(100% - 2rem);
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 24px;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 0 60px var(--panel-glow),
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
   will-change: transform, opacity;
+  transform-style: preserve-3d;
+}
+
+/* Glowing top edge accent */
+.page-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    var(--rose) 30%,
+    var(--gold) 50%,
+    var(--rose) 70%,
+    transparent);
+  opacity: 0.6;
+  z-index: 10;
+}
+
+/* Hero panel is full-viewport, no card border */
+.page-panel.page-hero {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+.page-panel.page-hero::before { display: none; }
+
+/* Footer panel — minimal */
+.page-panel.page-footer {
+  max-width: 800px;
+  background: rgba(15, 10, 25, 0.5);
+}
+
+/* Space section doesn't need extra dark bg */
+.page-panel.page-space {
+  background: rgba(0, 5, 15, 0.6);
 }
 
 /* ── FLOATING PETALS (cross-page) ── */
@@ -57,29 +229,17 @@ body {
   position: absolute;
   bottom: 0; left: 0; right: 0;
   height: 120px;
-  background: linear-gradient(to bottom, transparent, var(--warm));
+  background: linear-gradient(to bottom, transparent, rgba(5,5,16,0.8));
   pointer-events: none;
   z-index: 5;
 }
 
 .countdown-section::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 140px;
-  background: linear-gradient(to bottom, transparent, #000);
-  pointer-events: none;
-  z-index: 2;
+  display: none;
 }
 
 .space-section::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 140px;
-  background: linear-gradient(to bottom, transparent, var(--cream));
-  pointer-events: none;
-  z-index: 3;
+  display: none;
 }
 
 /* ── HERO ── */
@@ -92,7 +252,7 @@ body {
   text-align: center;
   padding: 2rem;
   position: relative;
-  background: var(--rose-pale);
+  background: transparent;
   overflow: hidden;
 }
 
@@ -101,8 +261,8 @@ body {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 60% 50% at 20% 20%, #fce4ec88 0%, transparent 60%),
-    radial-gradient(ellipse 50% 60% at 80% 80%, #ffe0e888 0%, transparent 60%);
+    radial-gradient(ellipse 60% 50% at 20% 20%, rgba(255,107,138,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 80% 80%, rgba(255,184,140,0.06) 0%, transparent 60%);
   pointer-events: none;
 }
 
@@ -196,7 +356,7 @@ body {
 .countdown-section {
   padding: 5rem 2rem;
   text-align: center;
-  background: var(--warm);
+  background: transparent;
   position: relative;
 }
 
@@ -224,20 +384,20 @@ body {
 }
 
 .stat-card {
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(20, 12, 30, 0.7);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 107, 138, 0.2);
   border-radius: 24px;
   padding: 1.8rem 2.2rem;
   min-width: 130px;
-  box-shadow: 0 8px 32px rgba(232,86,122,0.1), 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 8px 32px rgba(255, 107, 138, 0.08), 0 2px 8px rgba(0,0,0,0.3);
   transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
 }
 
 .stat-card:hover {
   transform: translateY(-8px) scale(1.04);
-  box-shadow: 0 16px 48px rgba(232,86,122,0.2), 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 16px 48px rgba(255, 107, 138, 0.2), 0 4px 12px rgba(0,0,0,0.4);
 }
 
 .stat-num {
@@ -260,8 +420,8 @@ body {
 .space-section {
   position: relative;
   width: 100%;
-  min-height: 100vh;
-  background: #000;
+  min-height: 80vh;
+  background: transparent;
   color: #fff;
   display: flex;
   align-items: center;
@@ -457,7 +617,7 @@ body {
 /* ── THREE.JS MEMORY SCENE ── */
 .memory-scene-wrapper {
   position: relative;
-  background: var(--cream);
+  background: transparent;
   padding-top: 5rem;
 }
 
@@ -534,19 +694,20 @@ body {
 }
 
 .polaroid {
-  background: white;
+  background: rgba(20, 12, 30, 0.85);
   padding: 12px 12px 42px;
-  box-shadow: 0 8px 32px rgba(232,86,122,0.18), 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 32px rgba(255,107,138,0.1), 0 2px 8px rgba(0,0,0,0.3);
   border-radius: 3px;
   flex-shrink: 0;
   width: 220px;
+  border: 1px solid rgba(255,107,138,0.12);
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
   cursor: pointer;
 }
 
 .polaroid:hover {
   transform: scale(1.08) rotate(0deg) !important;
-  box-shadow: 0 16px 40px rgba(232,86,122,0.25);
+  box-shadow: 0 16px 40px rgba(255,107,138,0.2);
   z-index: 10;
   position: relative;
 }
@@ -562,7 +723,7 @@ body {
 /* ── GSAP SCROLL MEMORY PANELS ── */
 .scroll-memory-section {
   position: relative;
-  background: var(--cream);
+  background: transparent;
 }
 
 .scroll-pin-container {
@@ -583,7 +744,7 @@ body {
 .scene-backdrop {
   position: absolute;
   inset: -20px;
-  background: linear-gradient(135deg, #fce4ec, #fff5f7, #f7e8d0);
+  background: linear-gradient(135deg, rgba(255,107,138,0.05), rgba(20,10,30,0.4), rgba(255,184,140,0.04));
   filter: blur(0px);
   transform: scale(0.85);
   opacity: 0;
@@ -609,11 +770,12 @@ body {
 .photo-panel.right { right: clamp(1rem, 5vw, 7rem); }
 
 .photo-frame {
-  background: white;
+  background: rgba(20, 12, 30, 0.85);
   padding: 14px 14px 44px;
-  box-shadow: 0 8px 40px rgba(232,86,122,0.18), 0 2px 8px rgba(0,0,0,0.10);
+  box-shadow: 0 8px 40px rgba(255,107,138,0.1), 0 2px 8px rgba(0,0,0,0.3);
   border-radius: 3px;
   position: relative;
+  border: 1px solid rgba(255,107,138,0.12);
 }
 
 .photo-frame .pin {
@@ -701,7 +863,7 @@ body {
 /* ── LETTER ── */
 .letter-section {
   padding: 6rem 2rem;
-  background: var(--rose-pale);
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -713,13 +875,13 @@ body {
 }
 
 .letter-card {
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(20, 12, 30, 0.8);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 20px;
   padding: 3rem 3.5rem;
-  box-shadow: 0 20px 60px rgba(232,86,122,0.12), 0 4px 12px rgba(0,0,0,0.04);
-  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 20px 60px rgba(255,107,138,0.08), 0 4px 12px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255, 107, 138, 0.15);
   position: relative;
   overflow: hidden;
 }
@@ -812,20 +974,20 @@ body {
 }
 
 .env-back {
-  position: absolute; inset: 0; background: #e3cdaf; border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  position: absolute; inset: 0; background: #1a0f20; border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
 .env-front {
-  position: absolute; inset: 0; background: #fdf5e6; 
+  position: absolute; inset: 0; background: #150d1a;
   clip-path: polygon(0 0, 50% 45%, 100% 0, 100% 100%, 0 100%);
-  border-radius: 8px; box-shadow: inset 0 0 20px rgba(0,0,0,0.02);
+  border-radius: 8px; box-shadow: inset 0 0 20px rgba(255,107,138,0.05);
   z-index: 5;
 }
 
 .env-flap {
   position: absolute; top: 0; left: 0; width: 100%; height: 62%;
-  background: #f5e4c6; clip-path: polygon(0 0, 100% 0, 50% 100%);
+  background: #1e1228; clip-path: polygon(0 0, 100% 0, 50% 100%);
   transform-origin: top; transition: transform 0.5s ease-in-out; border-radius: 8px 8px 0 0;
   z-index: 6;
 }
@@ -866,7 +1028,7 @@ body {
 
 .env-paper {
   position: absolute; top: 10px; left: 20px; right: 20px; height: 260px;
-  background: white; border-radius: 4px;
+  background: rgba(30, 18, 40, 0.9); border-radius: 4px;
   z-index: 2;
 }
 
@@ -906,8 +1068,8 @@ body {
 footer {
   padding: 3rem 2rem;
   text-align: center;
-  background: var(--text);
-  color: white;
+  background: transparent;
+  color: rgba(255,255,255,0.8);
 }
 
 footer p {
@@ -2468,9 +2630,93 @@ footer small {
   .space-nebula { inset: -10%; }
 }
 
+/* ═══════════════════════════════════════════════════════
+   🏛️ 3D ROTATING POLES TRANSITION
+═══════════════════════════════════════════════════════ */
+.poles-transition {
+  position: relative;
+  height: 30vh;
+  min-height: 180px;
+  max-height: 300px;
+  display: flex;
+  overflow: hidden;
+  z-index: 5;
+  perspective: 1200px;
+  margin: -2px 0;
+}
+
+.pole {
+  flex: 1;
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+  /* Slight gap between poles for depth illusion */
+  margin: 0 0.5px;
+}
+
+.pole-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.pole-front {
+  z-index: 2;
+  /* Light edge highlight */
+  box-shadow: inset -1px 0 0 rgba(255,255,255,0.08),
+              inset 1px 0 0 rgba(255,255,255,0.04);
+}
+
+.pole-back {
+  transform: rotateY(180deg);
+  z-index: 1;
+  /* Subtle edge glow for the dark side */
+  box-shadow: inset -1px 0 0 rgba(255,255,255,0.03),
+              inset 1px 0 0 rgba(255,255,255,0.02);
+}
+
+/* Add subtle lighting effect — poles in the center are brighter */
+.pole:nth-child(1) .pole-front,
+.pole:nth-child(12) .pole-front { filter: brightness(0.92); }
+.pole:nth-child(2) .pole-front,
+.pole:nth-child(11) .pole-front { filter: brightness(0.95); }
+.pole:nth-child(6) .pole-front,
+.pole:nth-child(7) .pole-front { filter: brightness(1.05); }
+
+/* Shadow beneath poles for depth */
+.poles-transition::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 40%;
+  background: linear-gradient(to top, rgba(0,0,0,0.15), transparent);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Top shadow too for enclosure feel */
+.poles-transition::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 30%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.1), transparent);
+  pointer-events: none;
+  z-index: 10;
+}
+
+@media (max-width: 700px) {
+  .poles-transition {
+    height: 18vh;
+    min-height: 100px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cursor-ring, .cursor-dot, .cursor-trail { display: none !important; }
   .section-transition { display: none; }
+  .poles-transition { display: none; }
   .scroll-progress-track { display: none; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

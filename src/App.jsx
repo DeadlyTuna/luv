@@ -12,61 +12,43 @@ import SlideshowOverlay from './components/SlideshowOverlay'
 import GlobeOverlay from './components/GlobeOverlay'
 import CursorEffects from './components/CursorEffects'
 import FloatingPetals from './components/FloatingPetals'
+import SpaceBackground from './components/SpaceBackground'
 
 gsap.registerPlugin(ScrollTrigger)
 
-// Section transition overlay with clip-path wipe
-function SectionTransition({ from, to, shape = 'diagonal' }) {
-  const ref = useRef(null)
+// ── Central 3D Pole ──
+function CentralPole() {
+  const poleRef = useRef(null)
 
   useEffect(() => {
-    const el = ref.current
-    if (!el) return
+    const pole = poleRef.current
+    if (!pole) return
 
-    // Scrub a clip-path animation synced to scroll
-    const clipPaths = {
-      diagonal: {
-        start: 'polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)',
-        end: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
-      },
-      circle: {
-        start: 'circle(0% at 50% 50%)',
-        end: 'circle(150% at 50% 50%)',
-      },
-      diamond: {
-        start: 'polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%)',
-        end: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
-      },
-    }
-
-    const clip = clipPaths[shape] || clipPaths.diagonal
-
-    gsap.fromTo(el, {
-      clipPath: clip.start,
-      opacity: 1,
-    }, {
-      clipPath: clip.end,
-      opacity: 1,
+    // Rotate the pole based on total scroll progress
+    gsap.to(pole, {
+      rotateY: 720,
       scrollTrigger: {
-        trigger: el,
-        start: 'top bottom',
-        end: 'bottom top',
-        scrub: 0.5,
+        trigger: document.documentElement,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 1.5,
       },
       ease: 'none',
     })
-  }, [shape])
+  }, [])
 
   return (
-    <div
-      ref={ref}
-      className="section-transition"
-      style={{ background: `linear-gradient(135deg, ${from}, ${to})` }}
-    />
+    <div className="central-pole-container">
+      <div className="central-pole" ref={poleRef}>
+        <div className="pole-glow" />
+        <div className="pole-core" />
+        <div className="pole-shine" />
+      </div>
+    </div>
   )
 }
 
-// Scroll progress bar
+// ── Scroll Progress Bar ──
 function ScrollProgress() {
   const barRef = useRef(null)
 
@@ -105,32 +87,64 @@ export default function App() {
     setSlideshowOpen(true)
   }, [])
 
-  // ── Enhanced section transitions with 3D perspective ──
+  // ── 3D rotating panel entrance for each page ──
   useEffect(() => {
-    const sections = document.querySelectorAll('.slide-section')
-    sections.forEach((section, i) => {
-      // 3D perspective entrance for each section
-      gsap.set(section, {
+    const panels = document.querySelectorAll('.page-panel')
+
+    panels.forEach((panel, i) => {
+      // Alternate rotation direction for variety, but keep it subtle to prevent layout breaking
+      const fromRight = i % 2 === 0
+      const startRotY = fromRight ? 15 : -15
+
+      gsap.set(panel, {
+        rotateY: startRotY,
+        rotateX: 10,
+        y: 80,
+        z: -150,
         opacity: 0,
-        y: 60,
-        rotateX: -8,
+        scale: 0.95,
         transformPerspective: 1200,
-        transformOrigin: 'center top',
+        transformOrigin: '50% 50%',
       })
 
+      // Entrance animation
       ScrollTrigger.create({
-        trigger: section,
-        start: 'top 90%',
-        once: true,
-        onEnter: () => {
-          gsap.to(section, {
-            opacity: 1,
-            y: 0,
-            rotateX: 0,
-            duration: 1.3,
-            ease: 'expo.out',
-            delay: 0.05,
+        trigger: panel,
+        start: 'top 95%',
+        end: 'center center',
+        scrub: 1.2,
+        onUpdate: (self) => {
+          const p = self.progress
+          const easeP = gsap.parseEase('power2.out')(p)
+          gsap.set(panel, {
+            rotateY: startRotY * (1 - easeP),
+            rotateX: 10 * (1 - easeP),
+            y: 80 * (1 - easeP),
+            z: -150 * (1 - easeP),
+            opacity: Math.min(1, p * 3),
+            scale: 0.95 + 0.05 * easeP,
           })
+        }
+      })
+
+      // Exit animation
+      ScrollTrigger.create({
+        trigger: panel,
+        start: 'bottom 40%',
+        end: 'bottom 0%',
+        scrub: 1.2,
+        onUpdate: (self) => {
+          const p = self.progress
+          const exitRotY = fromRight ? -10 : 10
+          if (p > 0) {
+            gsap.set(panel, {
+              rotateY: exitRotY * p,
+              rotateX: -5 * p,
+              y: -50 * p,
+              z: -100 * p,
+              opacity: 1 - (p * 1.5),
+            })
+          }
         }
       })
     })
@@ -140,31 +154,46 @@ export default function App() {
 
   return (
     <>
-      {/* Global effects */}
+      {/* Fixed background layers */}
+      <SpaceBackground />
+      <CentralPole />
       <CursorEffects />
       <FloatingPetals />
       <ScrollProgress />
 
-      {/* Main content */}
-      <Hero />
+      {/* Page panels — each section is a distinct "page" */}
+      <div className="pages-container">
+        <div className="page-panel page-hero">
+          <Hero />
+        </div>
 
-      <SectionTransition from="var(--rose-pale)" to="var(--warm)" shape="diagonal" />
-      <div className="slide-section"><Countdown /></div>
+        <div className="page-panel page-countdown">
+          <Countdown />
+        </div>
 
-      <SectionTransition from="var(--warm)" to="#000" shape="circle" />
-      <div className="slide-section"><SpaceSection /></div>
+        <div className="page-panel page-space">
+          <SpaceSection />
+        </div>
 
-      <SectionTransition from="#000" to="var(--cream)" shape="diamond" />
-      <div className="slide-section"><MemoryWall /></div>
+        <div className="page-panel page-memory">
+          <MemoryWall />
+        </div>
 
-      <div className="slide-section">
-        <ScrollScenes onOpenSlideshow={openSlideshow} onGlobeOpen={() => setGlobeOpen(true)} />
+        <div className="page-panel page-scenes">
+          <ScrollScenes
+            onOpenSlideshow={openSlideshow}
+            onGlobeOpen={() => setGlobeOpen(true)}
+          />
+        </div>
+
+        <div className="page-panel page-envelope">
+          <Envelope />
+        </div>
+
+        <div className="page-panel page-footer">
+          <Footer />
+        </div>
       </div>
-
-      <SectionTransition from="var(--cream)" to="var(--rose-pale)" shape="diagonal" />
-      <div className="slide-section"><Envelope /></div>
-
-      <Footer />
 
       {/* Overlays */}
       <SlideshowOverlay
