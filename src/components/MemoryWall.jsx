@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import TextReveal from './TextReveal'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -54,6 +55,7 @@ export default function MemoryWall() {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const headerRef = useRef(null)
+  const wallRef = useRef(null)
 
   // Three.js floating hearts
   useEffect(() => {
@@ -138,27 +140,80 @@ export default function MemoryWall() {
     }
   }, [])
 
-  // Header entrance
+  // ── 3D scroll reveal for polaroid wall ──
   useEffect(() => {
-    const header = headerRef.current
-    if (!header) return
-    const label = header.querySelector('.section-label')
-    const title = header.querySelector('.section-title')
-    gsap.set([label, title], { y: 40, opacity: 0 })
-    ScrollTrigger.create({
-      trigger: header, start: 'top 80%', once: true,
-      onEnter: () => {
-        gsap.to(label, { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out' })
-        gsap.to(title, { y: 0, opacity: 1, duration: 1, delay: 0.15, ease: 'power3.out' })
-      }
-    })
+    const wall = wallRef.current
+    if (!wall) return
+
+    const rows = wall.querySelectorAll('.wall-row-wrapper')
+
+    const ctx = gsap.context(() => {
+      // Rows fly in from 3D depth
+      rows.forEach((row, i) => {
+        gsap.set(row, {
+          opacity: 0,
+          y: 80,
+          rotateX: -20,
+          scale: 0.9,
+          transformPerspective: 1000,
+          transformOrigin: 'center center',
+        })
+
+        ScrollTrigger.create({
+          trigger: row,
+          start: 'top 90%',
+          once: true,
+          onEnter: () => {
+            gsap.to(row, {
+              opacity: 1,
+              y: 0,
+              rotateX: 0,
+              scale: 1,
+              duration: 1.2,
+              delay: i * 0.2,
+              ease: 'expo.out',
+            })
+          }
+        })
+      })
+
+      // Subtle parallax tilt on the whole wall as you scroll
+      gsap.to(wall, {
+        scrollTrigger: {
+          trigger: wall,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1.5,
+        },
+        rotateX: 3,
+        y: -30,
+        ease: 'none',
+      })
+    }, wall)
+
+    return () => ctx.revert()
   }, [])
 
   return (
     <section className="memory-scene-wrapper">
       <div className="memory-scene-header" ref={headerRef}>
-        <div className="section-label">our little world</div>
-        <h2 className="section-title">the memory wall</h2>
+        <TextReveal
+          text="our little world"
+          tag="div"
+          className="section-label"
+          mode="words"
+          stagger={0.06}
+          duration={0.7}
+        />
+        <TextReveal
+          text="the memory wall"
+          tag="h2"
+          className="section-title"
+          mode="chars"
+          stagger={0.04}
+          duration={0.8}
+          delay={0.1}
+        />
       </div>
 
       <div id="three-canvas-container" ref={containerRef} style={{ position: 'relative', overflow: 'hidden', minHeight: '600px' }}>
@@ -167,7 +222,7 @@ export default function MemoryWall() {
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }}
         />
 
-        <div style={{ position: 'relative', zIndex: 5, paddingTop: '8vh', paddingBottom: '6vh' }}>
+        <div ref={wallRef} className="memory-wall-3d" style={{ position: 'relative', zIndex: 5, paddingTop: '8vh', paddingBottom: '6vh', perspective: '1200px' }}>
           <MarqueeRow photos={WALL_PHOTOS} reversed={false} />
           <div style={{ height: '2rem' }} />
           <MarqueeRow photos={WALL_PHOTOS} reversed={true} />

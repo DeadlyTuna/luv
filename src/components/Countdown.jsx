@@ -1,13 +1,12 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import TextReveal from './TextReveal'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export default function Countdown() {
   const sectionRef = useRef(null)
-  const labelRef = useRef(null)
-  const titleRef = useRef(null)
   const gridRef = useRef(null)
   const daysRef = useRef(null)
 
@@ -23,42 +22,42 @@ export default function Countdown() {
   }, [])
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Title entrance
-      if (labelRef.current && titleRef.current) {
-        gsap.set(titleRef.current, { y: 40, opacity: 0 })
-        gsap.set(labelRef.current, { y: 20, opacity: 0 })
-        ScrollTrigger.create({
-          trigger: sectionRef.current,
-          start: 'top 75%',
-          once: true,
-          onEnter: () => {
-            gsap.to(labelRef.current, { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out' })
-            gsap.to(titleRef.current, { y: 0, opacity: 1, duration: 1, delay: 0.15, ease: 'power3.out' })
-          }
-        })
-      }
+    const section = sectionRef.current
+    if (!section) return
 
-      // Stat cards stagger
+    const ctx = gsap.context(() => {
+      // ── 3D Card flip entrance ──
       const cards = gridRef.current?.querySelectorAll('.stat-card')
       if (cards?.length) {
-        gsap.set(cards, { y: 60, opacity: 0, scale: 0.92 })
+        gsap.set(cards, {
+          rotateY: 90,
+          rotateX: -15,
+          scale: 0.7,
+          opacity: 0,
+          transformOrigin: 'center center',
+          transformPerspective: 800,
+        })
+
         ScrollTrigger.create({
           trigger: gridRef.current,
-          start: 'top 80%',
+          start: 'top 82%',
           once: true,
           onEnter: () => {
             gsap.to(cards, {
-              y: 0, opacity: 1, scale: 1,
-              duration: 0.9, stagger: 0.12,
-              ease: 'back.out(1.6)',
+              rotateY: 0,
+              rotateX: 0,
+              scale: 1,
+              opacity: 1,
+              duration: 1.1,
+              stagger: 0.15,
+              ease: 'back.out(1.4)',
             })
           }
         })
       }
 
-      // Counter animation
-      const statNums = sectionRef.current?.querySelectorAll('.stat-num[data-count]')
+      // ── Counter animation ──
+      const statNums = section.querySelectorAll('.stat-num[data-count]')
       statNums?.forEach(el => {
         const target = parseInt(el.dataset.count)
         ScrollTrigger.create({
@@ -73,31 +72,58 @@ export default function Countdown() {
           }
         })
       })
-    }, sectionRef)
+
+      // ── 3D perspective tilt on scroll (scrubbed) ──
+      gsap.to(section, {
+        scrollTrigger: {
+          trigger: section,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1,
+        },
+        '--section-rotate': '8deg',
+        ease: 'none',
+      })
+
+    }, section)
 
     return () => ctx.revert()
   }, [])
 
   return (
-    <section className="countdown-section" ref={sectionRef}>
-      <div className="section-label reveal" ref={labelRef}>look how far we've come</div>
-      <h2 className="section-title reveal" ref={titleRef}>
-        2 months of <em style={{ fontStyle: 'italic', color: 'var(--rose)' }}>us</em>
-      </h2>
+    <section className="countdown-section countdown-3d" ref={sectionRef}>
+      <TextReveal
+        text="look how far we've come"
+        tag="div"
+        className="section-label"
+        mode="words"
+        stagger={0.06}
+        duration={0.7}
+      />
+      <TextReveal
+        text="2 months of us"
+        tag="h2"
+        className="section-title"
+        mode="chars"
+        stagger={0.03}
+        duration={0.9}
+        delay={0.1}
+        style={{ fontStyle: 'normal' }}
+      />
       <div className="stats-grid" ref={gridRef}>
-        <div className="stat-card reveal">
+        <div className="stat-card">
           <div className="stat-num" ref={daysRef} data-count="59">59</div>
           <div className="stat-label">Days together</div>
         </div>
-        <div className="stat-card reveal" style={{ transitionDelay: '0.1s' }}>
+        <div className="stat-card">
           <div className="stat-num">∞</div>
           <div className="stat-label">Memories made</div>
         </div>
-        <div className="stat-card reveal" style={{ transitionDelay: '0.2s' }}>
+        <div className="stat-card">
           <div className="stat-num">1</div>
           <div className="stat-label">Person for me</div>
         </div>
-        <div className="stat-card reveal" style={{ transitionDelay: '0.3s' }}>
+        <div className="stat-card">
           <div className="stat-num">❤️</div>
           <div className="stat-label">You, always</div>
         </div>
