@@ -11,7 +11,7 @@ import Footer from './components/Footer'
 import SlideshowOverlay from './components/SlideshowOverlay'
 import GlobeOverlay from './components/GlobeOverlay'
 import CursorEffects from './components/CursorEffects'
-import FloatingPetals from './components/FloatingPetals'
+import RoseVines from './components/RoseVines'
 import SpaceBackground from './components/SpaceBackground'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -157,8 +157,8 @@ export default function App() {
       {/* Fixed background layers */}
       <SpaceBackground />
       <CentralPole />
+      <RoseVines />
       <CursorEffects />
-      <FloatingPetals />
       <ScrollProgress />
 
       {/* Page panels — each section is a distinct "page" */}

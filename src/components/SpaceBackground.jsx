@@ -14,7 +14,7 @@ export default function SpaceBackground() {
     const ctx = canvas.getContext('2d')
     let W, H, rafId
     const stars = []
-    const STAR_COUNT = 280
+    const STAR_COUNT = 100
 
     const resize = () => {
       W = canvas.width = window.innerWidth
@@ -84,7 +84,6 @@ export default function SpaceBackground() {
     <div className="space-bg-fixed">
       <canvas ref={canvasRef} className="space-bg-canvas" />
       <div className="space-bg-nebula" />
-      <div className="space-bg-nebula space-bg-nebula-2" />
     </div>
   )
 }

@@ -27,7 +27,7 @@ function makeHeartTexture() {
 function Polaroid({ src, rot }) {
   return (
     <div className="polaroid" style={{ transform: `rotate(${rot}deg)` }}>
-      <img src={src} alt="memory" loading="lazy" />
+      <img src={src} alt="memory" loading="lazy" decoding="async" />
     </div>
   )
 }
@@ -74,7 +74,7 @@ export default function MemoryWall() {
     renderer.setSize(W, H)
     renderer.setClearColor(0x000000, 0)
 
-    const count = 120
+    const count = 50 // Reduced particles drastically for performance (lag fix)
     const positions = new Float32Array(count * 3)
     const colors = new Float32Array(count * 3)
     const palette = [
@@ -112,9 +112,9 @@ export default function MemoryWall() {
     let t = 0, rafId
     const animate = () => {
       rafId = requestAnimationFrame(animate)
-      t += 0.004
-      particles.rotation.y = mouseX * 0.08 + Math.sin(t * 0.3) * 0.05
-      particles.rotation.x = mouseY * 0.05 + Math.cos(t * 0.2) * 0.03
+      t += 0.002 // Slowed down calculating frequency
+      particles.rotation.y = mouseX * 0.05 + Math.sin(t * 0.2) * 0.03
+      particles.rotation.x = mouseY * 0.03 + Math.cos(t * 0.2) * 0.02
       const pos = geo.attributes.position.array
       for (let i = 0; i < count; i++) {
         pos[i * 3 + 1] += 0.003 + Math.sin(t + i) * 0.001

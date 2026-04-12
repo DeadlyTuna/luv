@@ -86,7 +86,7 @@ function SlideshowPreviewCard({ id, previewTrackId, photos, caption, date, onOpe
     if (!track || !photos.length) return
     imgsRef.current = photos.map((src, i) => {
       const img = document.createElement('img')
-      img.src = src; img.alt = ''; img.loading = 'eager'
+      img.src = src; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async'
       if (i === 0) img.classList.add('ss-prev-active')
       track.appendChild(img)
       return img

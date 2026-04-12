@@ -51,13 +51,7 @@ body {
   animation: nebulaFloat 20s ease-in-out infinite alternate;
 }
 
-.space-bg-nebula-2 {
-  background:
-    radial-gradient(ellipse 45% 35% at 60% 20%, rgba(255, 184, 140, 0.04) 0%, transparent 60%),
-    radial-gradient(ellipse 35% 55% at 30% 80%, rgba(180, 100, 255, 0.03) 0%, transparent 55%);
-  animation-delay: -10s;
-  animation-direction: alternate-reverse;
-}
+
 
 @keyframes nebulaFloat {
   0%   { transform: translate(0, 0) scale(1); }
@@ -103,15 +97,13 @@ body {
   position: absolute;
   top: 0; left: 50%;
   transform: translateX(-50%);
-  width: 80px;
+  width: 60px;
   height: 100%;
   background: linear-gradient(180deg,
     rgba(255, 107, 138, 0.0) 0%,
-    rgba(255, 107, 138, 0.08) 30%,
-    rgba(255, 184, 140, 0.12) 50%,
-    rgba(255, 107, 138, 0.08) 70%,
+    rgba(255, 107, 138, 0.08) 50%,
     rgba(255, 107, 138, 0.0) 100%);
-  filter: blur(24px);
+  filter: blur(12px);
 }
 
 .pole-shine {
