@@ -1,6 +1,34 @@
 import { useEffect, useRef, useState, useMemo } from 'react'
 import { gsap } from 'gsap'
 
+// A single drifting fairy light (stardust)
+function FairyLight({ x, y, size = 1.5, delay = 0 }) {
+  const lightRef = useRef(null)
+
+  useEffect(() => {
+    gsap.to(lightRef.current, {
+      y: '-=15',
+      x: '+=10',
+      opacity: 0.1,
+      duration: 3 + Math.random() * 2,
+      yoyo: true,
+      repeat: -1,
+      ease: 'sine.inOut',
+      delay: delay
+    })
+  }, [delay])
+
+  return (
+    <circle
+      ref={lightRef}
+      cx={x} cy={y} r={size}
+      fill="#fff"
+      opacity="0.8"
+      style={{ filter: `drop-shadow(0 0 ${size * 2}px #ffb3c6)` }}
+    />
+  )
+}
+
 // A single rose bud that blooms into a full rose
 function BloomingRose({ x, y, delayRange = [2000, 8000], flip = false }) {
   const [isBlooming, setIsBlooming] = useState(false)
@@ -50,6 +78,16 @@ function VineSegment({ yOffset, isRight }) {
     ]
   }, [yOffset])
 
+  const fairyLights = useMemo(() => {
+    return Array.from({ length: 6 }).map((_, i) => ({
+      id: i,
+      x: 10 + Math.random() * 70,
+      y: yOffset + Math.random() * 480,
+      size: 1 + Math.random() * 2,
+      delay: Math.random() * 3
+    }))
+  }, [yOffset])
+
   return (
     <g>
       {/* Magical Space Vine Path */}
@@ -72,6 +110,11 @@ function VineSegment({ yOffset, isRight }) {
       {/* Randomly Blooming Roses */}
       {roses.map(r => (
         <BloomingRose key={r.id} x={r.x} y={r.y} flip={r.flip} delayRange={r.delay} />
+      ))}
+
+      {/* Floating Stardust/Fairy Lights */}
+      {fairyLights.map(f => (
+        <FairyLight key={`light-${f.id}`} x={f.x} y={f.y} size={f.size} delay={f.delay} />
       ))}
     </g>
   )
