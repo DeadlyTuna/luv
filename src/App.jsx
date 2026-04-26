@@ -13,40 +13,21 @@ import GlobeOverlay from './components/GlobeOverlay'
 import CursorEffects from './components/CursorEffects'
 import RoseVines from './components/RoseVines'
 import SpaceBackground from './components/SpaceBackground'
+import MixtapePlayer from './components/MixtapePlayer'
+import KonamiCode from './components/KonamiCode'
+import SlotMachine from './components/SlotMachine'
+import ScratchCards from './components/ScratchCards'
+import VoiceNoteOverlay from './components/VoiceNoteOverlay'
+import RedThread from './components/RedThread'
+import FlashlightSection from './components/FlashlightSection'
+import ChaosHeart from './components/ChaosHeart'
+import HeartUnlock from './components/HeartUnlock'
+import ChatStory from './components/ChatStory'
+import IceShatter from './components/IceShatter'
+import FrequencyMatch from './components/FrequencyMatch'
+import TimeCapsule from './components/TimeCapsule'
 
 gsap.registerPlugin(ScrollTrigger)
-
-// ── Central 3D Pole ──
-function CentralPole() {
-  const poleRef = useRef(null)
-
-  useEffect(() => {
-    const pole = poleRef.current
-    if (!pole) return
-
-    // Rotate the pole based on total scroll progress
-    gsap.to(pole, {
-      rotateY: 720,
-      scrollTrigger: {
-        trigger: document.documentElement,
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: 1.5,
-      },
-      ease: 'none',
-    })
-  }, [])
-
-  return (
-    <div className="central-pole-container">
-      <div className="central-pole" ref={poleRef}>
-        <div className="pole-glow" />
-        <div className="pole-core" />
-        <div className="pole-shine" />
-      </div>
-    </div>
-  )
-}
 
 // ── Scroll Progress Bar ──
 function ScrollProgress() {
@@ -80,6 +61,8 @@ export default function App() {
   const [slideshowPhotos, setSlideshowPhotos] = useState([])
   const [slideshowRect, setSlideshowRect] = useState(null)
   const [globeOpen, setGlobeOpen] = useState(false)
+  const [voiceNoteOpen, setVoiceNoteOpen] = useState(false)
+  const [heartUnlocked, setHeartUnlocked] = useState(false)
 
   const openSlideshow = useCallback((photos, rect) => {
     setSlideshowPhotos(photos)
@@ -92,7 +75,6 @@ export default function App() {
     const panels = document.querySelectorAll('.page-panel')
 
     panels.forEach((panel, i) => {
-      // Alternate rotation direction for variety, but keep it subtle to prevent layout breaking
       const fromRight = i % 2 === 0
       const startRotY = fromRight ? 15 : -15
 
@@ -107,7 +89,6 @@ export default function App() {
         transformOrigin: '50% 50%',
       })
 
-      // Entrance animation
       ScrollTrigger.create({
         trigger: panel,
         start: 'top 95%',
@@ -127,7 +108,6 @@ export default function App() {
         }
       })
 
-      // Exit animation
       ScrollTrigger.create({
         trigger: panel,
         start: 'bottom 40%',
@@ -156,19 +136,27 @@ export default function App() {
     <>
       {/* Fixed background layers */}
       <SpaceBackground />
-      <CentralPole />
+      <RedThread />
       <RoseVines />
       <CursorEffects />
       <ScrollProgress />
 
-      {/* Page panels — each section is a distinct "page" */}
+      {/* Global interactive elements */}
+      <MixtapePlayer />
+      <KonamiCode />
+
+      {/* Page panels */}
       <div className="pages-container">
         <div className="page-panel page-hero">
-          <Hero />
+          <Hero onVoiceNoteOpen={() => setVoiceNoteOpen(true)} />
         </div>
 
         <div className="page-panel page-countdown">
           <Countdown />
+        </div>
+
+        <div className="page-panel page-frequency">
+          <FrequencyMatch />
         </div>
 
         <div className="page-panel page-space">
@@ -179,11 +167,49 @@ export default function App() {
           <MemoryWall />
         </div>
 
+        <div className="page-panel page-chaos">
+          <ChaosHeart />
+        </div>
+
+        <div className="page-panel page-slot">
+          <SlotMachine />
+        </div>
+
+        <div className="page-panel page-ice">
+          <IceShatter />
+        </div>
+
+        <div className="page-panel page-flashlight">
+          <FlashlightSection />
+        </div>
+
+        <div className="page-panel page-heart-unlock">
+          <HeartUnlock onUnlock={() => setHeartUnlocked(true)} />
+          {heartUnlocked && (
+            <div className="heart-unlock-reward">
+              <div className="heart-reward-emoji">💎</div>
+              <div className="heart-reward-text">You unlocked my heart. It was always yours. 💖</div>
+            </div>
+          )}
+        </div>
+
+        <div className="page-panel page-scratch">
+          <ScratchCards />
+        </div>
+
+        <div className="page-panel page-chat">
+          <ChatStory />
+        </div>
+
         <div className="page-panel page-scenes">
           <ScrollScenes
             onOpenSlideshow={openSlideshow}
             onGlobeOpen={() => setGlobeOpen(true)}
           />
+        </div>
+
+        <div className="page-panel page-capsule">
+          <TimeCapsule />
         </div>
 
         <div className="page-panel page-envelope">
@@ -205,6 +231,10 @@ export default function App() {
       <GlobeOverlay
         isOpen={globeOpen}
         onClose={() => setGlobeOpen(false)}
+      />
+      <VoiceNoteOverlay
+        isOpen={voiceNoteOpen}
+        onClose={() => setVoiceNoteOpen(false)}
       />
     </>
   )

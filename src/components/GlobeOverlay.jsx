@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import * as THREE from 'three'
 
 const PLACES = [
+  { name: 'Where It Began', country: 'Our Story · April 26th', lat: 28.6139, lon: 77.2090, emoji: '💖', desc: 'The place where two hearts became one — 26th of every month, forever ours', img: 'https://picsum.photos/seed/ourstory/800/500', color: 0xff4081, special: true },
   { name: 'Paris', country: 'France', lat: 48.8566, lon: 2.3522, emoji: '🗼', desc: 'City of Love & the Eiffel Tower', img: 'https://picsum.photos/seed/paris/800/500', color: 0xff6b9d },
   { name: 'Santorini', country: 'Greece', lat: 36.3932, lon: 25.4615, emoji: '🏛️', desc: 'Iconic blue domes above the Aegean Sea', img: 'https://picsum.photos/seed/santorini/800/500', color: 0x4fc3f7 },
   { name: 'Venice', country: 'Italy', lat: 45.4408, lon: 12.3155, emoji: '🛶', desc: 'Romantic canals and gondola rides', img: 'https://picsum.photos/seed/venice/800/500', color: 0xffb300 },
@@ -135,8 +136,9 @@ export default function GlobeOverlay({ isOpen, onClose }) {
     const pinMeshes = []
     PLACES.forEach((place, idx) => {
       const pos = latLonTo3D(place.lat, place.lon, 1.0)
+      const dotSize = place.special ? 0.055 : 0.035
       const dot = new THREE.Mesh(
-        new THREE.SphereGeometry(0.035, 16, 16),
+        new THREE.SphereGeometry(dotSize, 16, 16),
         new THREE.MeshBasicMaterial({ color: place.color })
       )
       dot.position.copy(pos)
@@ -144,8 +146,19 @@ export default function GlobeOverlay({ isOpen, onClose }) {
       pinGroup.add(dot)
       pinMeshes.push(dot)
 
+      // Add extra glow for the special pin
+      if (place.special) {
+        const glow = new THREE.Mesh(
+          new THREE.SphereGeometry(0.09, 16, 16),
+          new THREE.MeshBasicMaterial({ color: place.color, transparent: true, opacity: 0.25 })
+        )
+        glow.position.copy(pos)
+        glow.userData = { isPulse: true, phase: 0, isSpecialGlow: true }
+        pinGroup.add(glow)
+      }
+
       const ring = new THREE.Mesh(
-        new THREE.RingGeometry(0.028, 0.042, 32),
+        new THREE.RingGeometry(place.special ? 0.05 : 0.028, place.special ? 0.07 : 0.042, 32),
         new THREE.MeshBasicMaterial({ color: place.color, side: THREE.DoubleSide, transparent: true, opacity: 0.5 })
       )
       ring.position.copy(pos.clone().multiplyScalar(1.001))

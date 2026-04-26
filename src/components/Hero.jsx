@@ -5,7 +5,7 @@ import TextReveal from './TextReveal'
 
 gsap.registerPlugin(ScrollTrigger)
 
-export default function Hero() {
+export default function Hero({ onVoiceNoteOpen }) {
   const sectionRef = useRef(null)
   const titleRef = useRef(null)
   const subRef = useRef(null)
@@ -126,6 +126,13 @@ export default function Hero() {
         delay={0.7}
       />
       <div ref={subRef} style={{ display: 'none' }} />
+
+      {/* Voice Note CTA */}
+      <button className="hero-voice-btn" onClick={onVoiceNoteOpen} id="heroVoiceNote">
+        <span className="voice-btn-pulse" />
+        <span className="voice-btn-icon">🎙️</span>
+        <span className="voice-btn-text">listen to my heart</span>
+      </button>
 
       <div className="hero-scroll" ref={scrollRef}>
         <span>scroll down</span>

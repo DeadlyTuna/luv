@@ -1,9 +1,27 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import TextReveal from './TextReveal'
 
 gsap.registerPlugin(ScrollTrigger)
+
+// Generate random stars
+function generateStars(count) {
+  const stars = []
+  for (let i = 0; i < count; i++) {
+    stars.push({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: 1.5 + Math.random() * 3,
+      brightness: 0.4 + Math.random() * 0.6,
+      twinkleDelay: Math.random() * 4,
+    })
+  }
+  return stars
+}
+
+const CONSTELLATION_STARS = generateStars(80)
 
 export default function SpaceSection() {
   const sectionRef = useRef(null)
@@ -13,6 +31,28 @@ export default function SpaceSection() {
   const textLeftRef  = useRef(null)
   const textRightRef = useRef(null)
   const nebulaRef = useRef(null)
+  const constellationRef = useRef(null)
+  const [connections, setConnections] = useState([])
+  const [selectedStars, setSelectedStars] = useState([])
+  const [showHint, setShowHint] = useState(true)
+
+  // Handle star click to draw constellations
+  const handleStarClick = (star) => {
+    setShowHint(false)
+    const newSelected = [...selectedStars, star]
+    setSelectedStars(newSelected)
+
+    if (newSelected.length >= 2) {
+      const last = newSelected[newSelected.length - 2]
+      const curr = newSelected[newSelected.length - 1]
+      setConnections(prev => [...prev, { from: last, to: curr }])
+    }
+  }
+
+  const clearConstellations = () => {
+    setConnections([])
+    setSelectedStars([])
+  }
 
   useEffect(() => {
     const section  = sectionRef.current
@@ -132,6 +172,54 @@ export default function SpaceSection() {
       <div className="stars-bg stars-bg-far" ref={starsRef} />
       <div className="stars-bg stars-bg-near" ref={stars2Ref} />
       <div className="space-nebula" ref={nebulaRef} />
+
+      {/* Interactive constellation canvas */}
+      <div className="constellation-layer" ref={constellationRef}>
+        {/* SVG lines connecting clicked stars */}
+        <svg className="constellation-svg">
+          {connections.map((conn, i) => (
+            <line
+              key={i}
+              x1={conn.from.x + '%'}
+              y1={conn.from.y + '%'}
+              x2={conn.to.x + '%'}
+              y2={conn.to.y + '%'}
+              className="constellation-line"
+              style={{ animationDelay: `${i * 0.1}s` }}
+            />
+          ))}
+        </svg>
+
+        {/* Interactive stars */}
+        {CONSTELLATION_STARS.map((star) => (
+          <button
+            key={star.id}
+            className={`constellation-star ${selectedStars.includes(star) ? 'selected' : ''}`}
+            style={{
+              left: star.x + '%',
+              top: star.y + '%',
+              width: star.size + 'px',
+              height: star.size + 'px',
+              opacity: star.brightness,
+              animationDelay: star.twinkleDelay + 's',
+            }}
+            onClick={(e) => { e.stopPropagation(); handleStarClick(star) }}
+            title="Click to connect"
+          />
+        ))}
+
+        {/* Hint & clear */}
+        {showHint && (
+          <div className="constellation-hint">
+            ✨ click the stars to draw your own constellation ✨
+          </div>
+        )}
+        {connections.length > 0 && (
+          <button className="constellation-clear" onClick={clearConstellations} id="clearConstellation">
+            ↺ clear
+          </button>
+        )}
+      </div>
 
       <div className="space-content">
         <div className="space-text text-left" ref={textLeftRef}>
